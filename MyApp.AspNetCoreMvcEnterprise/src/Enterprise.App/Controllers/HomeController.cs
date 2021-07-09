@@ -1,4 +1,4 @@
-﻿using Enterprise.App.Models;
+﻿using Enterprise.App.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;

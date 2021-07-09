@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Enterprise.App.ViewModels;
 
 namespace Enterprise.App.Data
 {
@@ -12,5 +13,7 @@ namespace Enterprise.App.Data
             : base(options)
         {
         }
+        public DbSet<Enterprise.App.ViewModels.SupplierViewModel> SupplierViewModel { get; set; }
+        public DbSet<Enterprise.App.ViewModels.ProductViewModel> ProductViewModel { get; set; }
     }
 }

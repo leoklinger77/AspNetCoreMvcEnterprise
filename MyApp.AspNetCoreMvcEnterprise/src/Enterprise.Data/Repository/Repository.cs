@@ -21,9 +21,9 @@ namespace Enterprise.Data.Repository
             _dbSet = context.Set<T>();
         }
 
-        public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> expression)
+        public async Task<ICollection<T>> Find(Expression<Func<T, bool>> expression)
         {
-            return (IEnumerable<T>)await _dbSet.Where(expression).AsNoTracking().FirstOrDefaultAsync();
+            return await _dbSet.Where(expression).AsNoTracking().ToListAsync();
         }
 
         public virtual async Task<T> FindById(Guid id)
@@ -31,7 +31,7 @@ namespace Enterprise.Data.Repository
             return await _dbSet.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public virtual async Task<IEnumerable<T>> FindAll(T entity)
+        public virtual async Task<ICollection<T>> FindAll()
         {
             return await _dbSet.AsNoTracking().ToListAsync();
         }

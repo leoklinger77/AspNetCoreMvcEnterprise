@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Enterprise.App.ViewModels
@@ -33,6 +34,8 @@ namespace Enterprise.App.ViewModels
         public DateTime DataCadastro { get; set; }
 
         [Display(Name = "Ativo?")]
-        public bool Ativo { get; set; }        
+        public bool Ativo { get; set; }
+
+        public IEnumerable<SupplierViewModel> SupplierList { get; set; }
     }
 }

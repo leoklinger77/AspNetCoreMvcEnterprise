@@ -12,8 +12,8 @@ namespace Enterprise.Business.Interfaces.Repository
         Task Update(T entity);
         Task Delete(Guid id);
         Task<T> FindById(Guid id);
-        Task<IEnumerable<T>> FindAll(T entity);
-        Task<IEnumerable<T>> Find(Expression<Func<T, bool>> expression);
+        Task<ICollection<T>> FindAll();
+        Task<ICollection<T>> Find(Expression<Func<T, bool>> expression);
         Task<int> SaveChange();
     }
 }
