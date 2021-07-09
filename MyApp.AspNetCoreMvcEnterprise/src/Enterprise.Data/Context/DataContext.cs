@@ -1,4 +1,4 @@
-﻿using AppMvc.Models;
+﻿using Enterprise.Business.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 

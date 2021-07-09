@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AppMvc.Models
+namespace Enterprise.Business.Models
 {
     public class Address : Entity
     {

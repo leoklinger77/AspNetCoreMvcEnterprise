@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AppMvc.Models
+namespace Enterprise.Business.Models
 {
     public class Supplier : Entity
     {
