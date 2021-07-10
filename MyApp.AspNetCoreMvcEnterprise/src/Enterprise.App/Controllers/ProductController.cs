@@ -68,8 +68,24 @@ namespace Enterprise.App.Controllers
         public async Task<IActionResult> Edit(Guid id, ProductViewModel viewModel)
         {
             if (id != viewModel.Id) return NotFound();
-            if (!ModelState.IsValid) return NotFound();
-            await _productRepository.Update(_mapper.Map<Product>(viewModel));
+
+            var productUpdate = await FindProduct(id);
+            viewModel.Supplier = productUpdate.Supplier;
+            viewModel.Image = productUpdate.Image;
+            if (!ModelState.IsValid) return View(viewModel);
+
+            if (viewModel.ImageUpload != null)
+            {
+                var imgPath = Guid.NewGuid().ToString() + Path.GetExtension(viewModel.ImageUpload.FileName);
+                if (!await UploadFile(viewModel.ImageUpload, imgPath)) return View(viewModel);
+                productUpdate.Image = imgPath;
+            }
+            productUpdate.Nome = viewModel.Nome;
+            productUpdate.Valor = viewModel.Valor;
+            productUpdate.Descricao = viewModel.Descricao;
+            productUpdate.Ativo = viewModel.Ativo;
+
+            await _productRepository.Update(_mapper.Map<Product>(productUpdate));
             return RedirectToAction(nameof(Index));
         }
 
