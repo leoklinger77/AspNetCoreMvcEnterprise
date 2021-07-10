@@ -50,9 +50,9 @@
                     @Html.DisplayFor(modelItem => item.Ativo)
                 </td>
                 <td class="text-right">
-                    <a class="btn btn-outline-info" asp-controller="Product" asp-action="Details" asp-route-id="@item.Id"><span class="fa fa-search"></span></a> |
-                    <a class="btn btn-outline-warning" asp-controller="Product" asp-action="Edit" asp-route-id="@item.Id"><span class="fa fa-pencil-alt"></span></a> |
-                    <a class="btn btn-outline-danger" asp-controller="Product" asp-action="Delete" asp-route-id="@item.Id"><span class="fa fa-trash-alt"></span></a>
+                    <a disable-by-claim-name="Supplier" disable-by-claim-value="Details" class="btn btn-outline-info" asp-controller="Product" asp-action="Details" asp-route-id="@item.Id"><span class="fa fa-search"></span></a> 
+                    <a disable-by-claim-name="Supplier" disable-by-claim-value="Edit" class="btn btn-outline-warning" asp-controller="Product" asp-action="Edit" asp-route-id="@item.Id"><span class="fa fa-pencil-alt"></span></a> 
+                    <a disable-by-claim-name="Supplier" disable-by-claim-value="Remove" class="btn btn-outline-danger" asp-controller="Product" asp-action="Delete" asp-route-id="@item.Id"><span class="fa fa-trash-alt"></span></a>
                 </td>
             </tr>
         }

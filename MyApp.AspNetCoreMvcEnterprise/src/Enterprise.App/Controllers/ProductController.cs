@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Enterprise.App.Extensions;
 using Enterprise.App.ViewModels;
 using Enterprise.Business.Interfaces;
 using Enterprise.Business.Interfaces.Repository;
 using Enterprise.Business.Interfaces.Service;
 using Enterprise.Business.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace Enterprise.App.Controllers
 {
+    [Authorize]
     [Route("Produtos")]
     public class ProductController : BaseController
     {
@@ -27,11 +30,15 @@ namespace Enterprise.App.Controllers
             _supplierRepository = supplierRepository;
             _productService = productService;
         }
-        [Route("lista-produtos")]
+        
+        [AllowAnonymous]
+        [Route("lista-produtos")]        
         public async Task<IActionResult> Index()
         {
             return View(_mapper.Map<ICollection<ProductViewModel>>(await _productRepository.FindAll()));
         }
+        
+        [AllowAnonymous]
         [Route("detalhes-produto/{id:guid}")]
         public async Task<IActionResult> Details(Guid id)
         {
@@ -42,6 +49,7 @@ namespace Enterprise.App.Controllers
         }
 
         [Route("novo-produto")]
+        [ClaimsAuthorize("Product","Insert")]
         public async Task<IActionResult> Create()
         {
             ProductViewModel viewModel = await PopularSupplier(new ProductViewModel());
@@ -50,6 +58,7 @@ namespace Enterprise.App.Controllers
 
         [HttpPost]
         [Route("novo-produto")]
+        [ClaimsAuthorize("Product", "Insert")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductViewModel viewModel)
         {
@@ -70,6 +79,7 @@ namespace Enterprise.App.Controllers
         }
 
         [Route("editar-produto/{id:guid}")]
+        [ClaimsAuthorize("Product", "Edit")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var supplier = await FindProduct(id);
@@ -79,6 +89,7 @@ namespace Enterprise.App.Controllers
 
         [HttpPost]
         [Route("editar-produto/{id:guid}")]
+        [ClaimsAuthorize("Product", "Edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, ProductViewModel viewModel)
         {
@@ -107,6 +118,7 @@ namespace Enterprise.App.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [ClaimsAuthorize("Product", "Remove")]
         [Route("excluir-produto/{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -116,6 +128,7 @@ namespace Enterprise.App.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ClaimsAuthorize("Product", "Remove")]
         [Route("excluir-produto/{id:guid}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)

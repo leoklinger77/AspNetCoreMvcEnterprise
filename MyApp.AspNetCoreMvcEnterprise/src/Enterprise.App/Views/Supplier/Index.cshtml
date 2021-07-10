@@ -5,9 +5,9 @@
 }
 
 <h1>@ViewData["Title"]</h1>
-
+<vc:summary></vc:summary>
 <p>
-    <a class="btn btn-outline-info" asp-action="Create">Novo Fornecedor</a>
+    <a supress-by-claim-name="Supplier" supress-by-claim-value="Insert" class="btn btn-outline-info" asp-action="Create">Novo Fornecedor</a>
 </p>
 <table class="table table-hover">
     <thead class="thead-dark">
@@ -44,9 +44,9 @@
                     @Html.DisplayFor(modelItem => item.Ativo)
                 </td>
                 <td class="text-right">
-                    <a class="btn btn-outline-info" asp-action="Details" asp-route-id="@item.Id"><span class="fa fa-search"></span></a> |
-                    <a class="btn btn-outline-warning" asp-action="Edit" asp-route-id="@item.Id"><span class="fa fa-pencil-alt"></span></a> |
-                    <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id"><span class="fa fa-trash-alt"></span></a>
+                    <a class="btn btn-outline-info" supress-by-claim-name="Supplier" supress-by-claim-value="Details" asp-action="Details" asp-route-id="@item.Id"><span class="fa fa-search"></span></a>
+                    <a class="btn btn-outline-warning" supress-by-claim-name="Supplier" supress-by-claim-value="Edit" asp-action="Edit" asp-route-id="@item.Id"><span class="fa fa-pencil-alt"></span></a>
+                    <a class="btn btn-outline-danger" supress-by-claim-name="Supplier" supress-by-claim-value="Remove" asp-action="Delete" asp-route-id="@item.Id"><span class="fa fa-trash-alt"></span></a>
                 </td>
             </tr>
         }

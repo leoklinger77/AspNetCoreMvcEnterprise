@@ -59,7 +59,7 @@
                     @Html.DisplayFor(model => model.Endereco.Estado)
                 </td>
                 <td>
-                    <a asp-action="UpdateAddress" asp-route-id="@Model.Id" data-modal="" class="btn btn-info">
+                    <a supress-by-action="Edit"  asp-action="UpdateAddress" asp-route-id="@Model.Id" data-modal="" class="btn btn-info">
                         <span title="Editar" class="fa fa-pencil-alt"></span>
                     </a>
                 </td>
@@ -72,8 +72,10 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
-
 <script>
     SetModal();
+</script>
+<script>
+    
     BuscaCep();
 </script>

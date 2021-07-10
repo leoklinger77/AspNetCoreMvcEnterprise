@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Enterprise.App.Extensions;
 using Enterprise.App.ViewModels;
 using Enterprise.Business.Interfaces;
 using Enterprise.Business.Interfaces.Repository;
 using Enterprise.Business.Interfaces.Service;
 using Enterprise.Business.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -11,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Enterprise.App.Controllers
 {
-    [Route("fornecedores")]
+    [Authorize]    
     public class SupplierController : BaseController
     {
         private readonly ISupplierRepository _supplierRepository;
@@ -24,13 +26,13 @@ namespace Enterprise.App.Controllers
             _supplierService = supplierService;
         }
 
-        [Route("lista-de-fornecedores")]
+        [AllowAnonymous]        
         public async Task<IActionResult> Index()
         {
             return View(_mapper.Map<ICollection<SupplierViewModel>>(await _supplierRepository.FindAll()));
         }
 
-        [Route("lista-de-fornecedores/detalhes-fornecdor/{id:guid}")]
+        [AllowAnonymous]        
         public async Task<IActionResult> Details(Guid id)
         {
             var supplier = await FindSupplierAndAddress(id);
@@ -38,15 +40,15 @@ namespace Enterprise.App.Controllers
 
             return View(supplier);
         }
-
-        [Route("novo-fornecedor")]
+                
+        [ClaimsAuthorize("Supplier", "Insert")]
         public async Task<IActionResult> Create()
         {
             return View();
         }
 
-        [HttpPost]
-        [Route("novo-fornecedor")]
+        [HttpPost]        
+        [ClaimsAuthorize("Supplier", "Insert")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SupplierViewModel viewModel)
         {
@@ -57,8 +59,8 @@ namespace Enterprise.App.Controllers
             if (OperationIsValid()) return View(viewModel);
             return RedirectToAction(nameof(Index));
         }
-
-        [Route("editar-fornecedor/{id:guid}")]
+                
+        [ClaimsAuthorize("Supplier", "Edit")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var supplier = await FindSupplierAndAddressAndProduct(id);
@@ -66,8 +68,8 @@ namespace Enterprise.App.Controllers
             return View(supplier);
         }
 
-        [HttpPost]
-        [Route("editar-fornecedor/{id:guid}")]
+        [HttpPost]        
+        [ClaimsAuthorize("Supplier", "Edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, SupplierViewModel viewModel)
         {
@@ -79,8 +81,8 @@ namespace Enterprise.App.Controllers
             if (OperationIsValid()) return View(viewModel);
             return RedirectToAction(nameof(Index));
         }
-
-        [Route("excluir-fornecedor/{id:guid}")]
+        
+        [ClaimsAuthorize("Supplier", "Remove")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var supplier = await FindSupplierAndAddress(id);
@@ -88,8 +90,8 @@ namespace Enterprise.App.Controllers
             return View(supplier);
         }
 
-        [HttpPost, ActionName("Delete")]
-        [Route("excluir-fornecedor/{id:guid}")]
+        [HttpPost, ActionName("Delete")]        
+        [ClaimsAuthorize("Supplier", "Remove")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
@@ -100,7 +102,7 @@ namespace Enterprise.App.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Route("FindAddress")]
+        [AllowAnonymous]        
         public async Task<IActionResult> FindAddress(Guid id)
         {
             var supplier = await FindSupplierAndAddress(id);
@@ -110,7 +112,7 @@ namespace Enterprise.App.Controllers
             return PartialView("_DetailsAddress", supplier);
         }
         [HttpGet]
-        [Route("UpdateAddress/{id:guid}")]
+        [ClaimsAuthorize("Supplier", "Update")]        
         public async Task<IActionResult> UpdateAddress(Guid id)
         {
             var supplier = await FindSupplierAndAddress(id);
@@ -120,10 +122,10 @@ namespace Enterprise.App.Controllers
             return PartialView("_UpdateAddress", new SupplierViewModel { Endereco = supplier.Endereco });
         }
 
-        [HttpPost]
-        [Route("UpdateAddress/{id:guid}")]
+        [HttpPost]        
+        [ClaimsAuthorize("Supplier", "Update")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateAddress(Guid id, SupplierViewModel supplier)
+        public async Task<IActionResult> UpdateAddress(SupplierViewModel supplier)
         {
             ModelState.Remove("Documento");
             ModelState.Remove("Nome");
