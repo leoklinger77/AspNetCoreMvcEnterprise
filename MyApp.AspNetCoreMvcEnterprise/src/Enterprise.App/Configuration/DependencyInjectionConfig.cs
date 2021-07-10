@@ -1,5 +1,7 @@
-﻿using Enterprise.Business.Interfaces.Repository;
+﻿using Enterprise.App.Extensions;
+using Enterprise.Business.Interfaces.Repository;
 using Enterprise.Data.Repository;
+using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Enterprise.App.Configuration
@@ -12,6 +14,8 @@ namespace Enterprise.App.Configuration
             service.AddScoped<ISupplierRepository, SupplierRepository>();
             service.AddScoped<IProductRepository, ProductRepository>();
             service.AddScoped<IAddressRepository, AddressRepository>();
+
+            service.AddSingleton<IValidationAttributeAdapterProvider, CoinValidationAttributeAdapterProvider>();
                         
             return service;
         }

@@ -11,11 +11,13 @@ namespace Enterprise.App.Controllers
 {
     public class SupplierController : BaseController
     {
-        private readonly ISupplierRepository _supplierRepository;       
+        private readonly ISupplierRepository _supplierRepository;
+        private readonly IAddressRepository _addressRepository;
 
-        public SupplierController(IMapper mapper, ISupplierRepository supplierRepository) : base(mapper)
+        public SupplierController(IMapper mapper, ISupplierRepository supplierRepository, IAddressRepository addressRepository) : base(mapper)
         {
-            _supplierRepository = supplierRepository;            
+            _supplierRepository = supplierRepository;
+            _addressRepository = addressRepository;
         }
 
         public async Task<IActionResult> Index()
@@ -82,6 +84,39 @@ namespace Enterprise.App.Controllers
             if (supplier is null) return BadRequest();
             await _supplierRepository.Delete(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> FindAddress(Guid id)
+        {
+            var supplier = await FindSupplierAndAddress(id);
+
+            if (supplier is null) return BadRequest();
+
+            return PartialView("_DetailsAddress", supplier);
+        }
+
+        public async Task<IActionResult> UpdateAddress(Guid id)
+        {
+            var supplier = await FindSupplierAndAddress(id);
+
+            if (supplier is null) return BadRequest();
+
+            return PartialView("_UpdateAddress", new SupplierViewModel { Endereco = supplier.Endereco });
+        }        
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateAddress(SupplierViewModel supplier)
+        {
+            ModelState.Remove("Documento");
+            ModelState.Remove("Nome");
+            if (!ModelState.IsValid) return PartialView("_UpdateAddress", supplier);
+
+            await _addressRepository.Update(_mapper.Map<Address>(supplier.Endereco));
+
+            var url = Url.Action("FindAddress", "Supplier", new { id = supplier.Id });
+
+            return Json(new { Success = true, url });
         }
 
         private async Task<SupplierViewModel> FindSupplierAndAddress(Guid id)

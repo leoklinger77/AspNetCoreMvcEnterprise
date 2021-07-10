@@ -13,5 +13,6 @@ namespace Enterprise.App.Data
             : base(options)
         {
         }        
+        public DbSet<Enterprise.App.ViewModels.AddressViewModel> AddressViewModel { get; set; }
     }
 }
