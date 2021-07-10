@@ -2,9 +2,11 @@
 using Enterprise.App.ViewModels;
 using Enterprise.Business.Interfaces.Repository;
 using Enterprise.Business.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Enterprise.App.Controllers
@@ -43,11 +45,17 @@ namespace Enterprise.App.Controllers
         public async Task<IActionResult> Create(ProductViewModel viewModel)
         {
             viewModel = await PopularSupplier(viewModel);
-            if (!ModelState.IsValid) return View(viewModel);            
+            if (!ModelState.IsValid) return View(viewModel);
+
+            var imgPath = Guid.NewGuid().ToString() + Path.GetExtension(viewModel.ImageUpload.FileName);
+
+            if (!await UploadFile(viewModel.ImageUpload, imgPath)) return View(viewModel);
+
+            viewModel.Image = imgPath;
+
             await _productRepository.Insert(_mapper.Map<Product>(viewModel));
             return RedirectToAction(nameof(Index));
         }
-
         public async Task<IActionResult> Edit(Guid id)
         {
             var supplier = await FindProduct(id);
@@ -58,9 +66,9 @@ namespace Enterprise.App.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, ProductViewModel viewModel)
-        {            
+        {
             if (id != viewModel.Id) return NotFound();
-            if (!ModelState.IsValid) return NotFound();                        
+            if (!ModelState.IsValid) return NotFound();
             await _productRepository.Update(_mapper.Map<Product>(viewModel));
             return RedirectToAction(nameof(Index));
         }
@@ -75,7 +83,7 @@ namespace Enterprise.App.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {            
+        {
             if (await FindProduct(id) is null) return BadRequest();
             await _productRepository.Delete(id);
             return RedirectToAction(nameof(Index));
@@ -83,7 +91,7 @@ namespace Enterprise.App.Controllers
 
         private async Task<ProductViewModel> FindProduct(Guid id)
         {
-            var product =  _mapper.Map<ProductViewModel>(await _productRepository.FindProductSupplier(id));
+            var product = _mapper.Map<ProductViewModel>(await _productRepository.FindProductSupplier(id));
             product.SupplierList = _mapper.Map<IEnumerable<SupplierViewModel>>(await _supplierRepository.FindAll());
             return product;
         }
@@ -92,6 +100,26 @@ namespace Enterprise.App.Controllers
         {
             viewModel.SupplierList = _mapper.Map<IEnumerable<SupplierViewModel>>(await _supplierRepository.FindAll());
             return viewModel;
+        }
+
+        private async Task<bool> UploadFile(IFormFile imageUpload, string imgPath)
+        {
+            if (imageUpload.Length <= 0) return false;
+
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/image", imgPath);
+
+            if (System.IO.File.Exists(path))
+            {
+                ModelState.AddModelError(string.Empty, "Já existe um arquivo com este nome");
+                return false;
+            }
+
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await imageUpload.CopyToAsync(stream);
+            }
+
+            return true;
         }
     }
 }

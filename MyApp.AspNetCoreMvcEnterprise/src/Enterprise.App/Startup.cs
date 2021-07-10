@@ -20,13 +20,14 @@ namespace Enterprise.App
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper(typeof(Startup));
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();            
             services.Context(Configuration);
             services.Dependency();
-            services.AddDatabaseDeveloperPageExceptionFilter();
 
+            services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddControllersWithViews();
+            
         }
                 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

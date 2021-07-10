@@ -12,8 +12,6 @@ namespace Enterprise.App.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-        }
-        public DbSet<Enterprise.App.ViewModels.SupplierViewModel> SupplierViewModel { get; set; }
-        public DbSet<Enterprise.App.ViewModels.ProductViewModel> ProductViewModel { get; set; }
+        }        
     }
 }
