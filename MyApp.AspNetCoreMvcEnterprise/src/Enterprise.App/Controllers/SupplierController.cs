@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Enterprise.App.Controllers
 {
+    [Route("fornecedores")]
     public class SupplierController : BaseController
     {
         private readonly ISupplierRepository _supplierRepository;
@@ -20,10 +21,13 @@ namespace Enterprise.App.Controllers
             _addressRepository = addressRepository;
         }
 
+        [Route("lista-de-fornecedores")]
         public async Task<IActionResult> Index()
         {
             return View(_mapper.Map<ICollection<SupplierViewModel>>(await _supplierRepository.FindAll()));
         }
+
+        [Route("lista-de-fornecedores/detalhes-fornecdor/{id:guid}")]
         public async Task<IActionResult> Details(Guid id)
         {
             var supplier = await FindSupplierAndAddress(id);
@@ -32,12 +36,14 @@ namespace Enterprise.App.Controllers
             return View(supplier);
         }
 
+        [Route("novo-fornecedor")]
         public async Task<IActionResult> Create()
         {
             return View();
         }
 
         [HttpPost]
+        [Route("novo-fornecedor")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SupplierViewModel viewModel)
         {
@@ -49,6 +55,7 @@ namespace Enterprise.App.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Route("editar-fornecedor/{id:guid}")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var supplier = await FindSupplierAndAddressAndProduct(id);
@@ -57,6 +64,7 @@ namespace Enterprise.App.Controllers
         }
 
         [HttpPost]
+        [Route("editar-fornecedor/{id:guid}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, SupplierViewModel viewModel)
         {
@@ -69,6 +77,7 @@ namespace Enterprise.App.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Route("excluir-fornecedor/{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var supplier = await FindSupplierAndAddress(id);
@@ -77,6 +86,7 @@ namespace Enterprise.App.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [Route("excluir-fornecedor/{id:guid}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
@@ -85,7 +95,7 @@ namespace Enterprise.App.Controllers
             await _supplierRepository.Delete(id);
             return RedirectToAction(nameof(Index));
         }
-
+                
         public async Task<IActionResult> FindAddress(Guid id)
         {
             var supplier = await FindSupplierAndAddress(id);
