@@ -1,5 +1,8 @@
-﻿using Enterprise.Business.Interfaces.Service;
+﻿using Enterprise.Business.Interfaces;
+using Enterprise.Business.Interfaces.Repository;
+using Enterprise.Business.Interfaces.Service;
 using Enterprise.Business.Models;
+using Enterprise.Business.Models.Validations;
 using System;
 using System.Threading.Tasks;
 
@@ -7,20 +10,37 @@ namespace Enterprise.Business.Services
 {
     public class ProductService : BaseService, IProductService
     {
-        public Task<bool> Delete(Guid id)
+        private readonly IProductRepository _productRepository;
+
+        public ProductService(INotification notification, IProductRepository productRepository) : base(notification)
         {
-            throw new NotImplementedException();
+            _productRepository = productRepository;
         }
 
-        public Task<bool> Insert(Product product)
+        public async Task<bool> Delete(Guid id)
         {
-            throw new NotImplementedException();
+            await _productRepository.Delete(id);
+            return true;
+        }
+                
+        public async Task<bool> Insert(Product product)
+        {
+            if (!ExecutedValidation(new ProductValidation(), product)) return false;
+            
+            await _productRepository.Insert(product);
+            return true;
         }
 
-        public Task<bool> Update(Product product)
+        public async Task<bool> Update(Product product)
         {
-            throw new NotImplementedException();
+            if (!ExecutedValidation(new ProductValidation(), product)) return false;
+
+            await _productRepository.Update(product);
+            return true;
+        }
+        public void Dispose()
+        {
+            _productRepository?.Dispose();
         }
     }
-
 }

@@ -12,7 +12,7 @@
 
     <input type="hidden" asp-for="Id" />
 
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <vc:summary></vc:summary>
 
     <div class="form-row">
         <div class="form-group col-md-6">
@@ -66,10 +66,11 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-<script>
-    $(document).ready(function () {
-        AjaxModal();
-    })
-</script>
+    <script>
+        $(document).ready(function () {
+            AjaxModal();
+        })
+    </script>
 
 }
+

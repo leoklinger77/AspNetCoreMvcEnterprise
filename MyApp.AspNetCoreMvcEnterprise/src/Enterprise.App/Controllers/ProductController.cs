@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Enterprise.App.ViewModels;
+using Enterprise.Business.Interfaces;
 using Enterprise.Business.Interfaces.Repository;
+using Enterprise.Business.Interfaces.Service;
 using Enterprise.Business.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +18,14 @@ namespace Enterprise.App.Controllers
     {
         private readonly IProductRepository _productRepository;
         private readonly ISupplierRepository _supplierRepository;
+        private readonly IProductService _productService;
 
-        public ProductController(IMapper mapper, IProductRepository productRepository, ISupplierRepository supplierRepository) : base(mapper)
+        public ProductController(IMapper mapper, INotification notification, IProductRepository productRepository, 
+            ISupplierRepository supplierRepository, IProductService productService) : base(mapper, notification)
         {
             _productRepository = productRepository;
             _supplierRepository = supplierRepository;
+            _productService = productService;
         }
         [Route("lista-produtos")]
         public async Task<IActionResult> Index()
@@ -57,7 +62,10 @@ namespace Enterprise.App.Controllers
 
             viewModel.Image = imgPath;
 
-            await _productRepository.Insert(_mapper.Map<Product>(viewModel));
+            await _productService.Insert(_mapper.Map<Product>(viewModel));
+
+            if (OperationIsValid()) return View(viewModel);
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -92,7 +100,10 @@ namespace Enterprise.App.Controllers
             productUpdate.Descricao = viewModel.Descricao;
             productUpdate.Ativo = viewModel.Ativo;
 
-            await _productRepository.Update(_mapper.Map<Product>(productUpdate));
+            await _productService.Update(_mapper.Map<Product>(productUpdate));
+
+            if (OperationIsValid()) return View(viewModel);
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -109,8 +120,13 @@ namespace Enterprise.App.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            if (await FindProduct(id) is null) return BadRequest();
-            await _productRepository.Delete(id);
+            var db = await FindProduct(id);
+            if (db is null) return BadRequest();
+
+            await _productService.Delete(id);
+
+            if (OperationIsValid()) return View(db);
+            TempData["Sucesso"] = "Produto excluido com sucesso!";
             return RedirectToAction(nameof(Index));
         }
 

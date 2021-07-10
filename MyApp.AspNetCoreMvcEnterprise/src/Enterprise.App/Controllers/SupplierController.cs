@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Enterprise.App.ViewModels;
+using Enterprise.Business.Interfaces;
 using Enterprise.Business.Interfaces.Repository;
+using Enterprise.Business.Interfaces.Service;
 using Enterprise.Business.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,12 +15,13 @@ namespace Enterprise.App.Controllers
     public class SupplierController : BaseController
     {
         private readonly ISupplierRepository _supplierRepository;
-        private readonly IAddressRepository _addressRepository;
+        private readonly ISupplierService _supplierService;
 
-        public SupplierController(IMapper mapper, ISupplierRepository supplierRepository, IAddressRepository addressRepository) : base(mapper)
+        public SupplierController(IMapper mapper, INotification notification, ISupplierRepository supplierRepository,
+            ISupplierService supplierService) : base(mapper, notification)
         {
             _supplierRepository = supplierRepository;
-            _addressRepository = addressRepository;
+            _supplierService = supplierService;
         }
 
         [Route("lista-de-fornecedores")]
@@ -50,8 +53,8 @@ namespace Enterprise.App.Controllers
             if (!ModelState.IsValid) return View(viewModel);
 
             var supplier = _mapper.Map<Supplier>(viewModel);
-            await _supplierRepository.Insert(supplier);
-
+            await _supplierService.Insert(supplier);
+            if (OperationIsValid()) return View(viewModel);
             return RedirectToAction(nameof(Index));
         }
 
@@ -72,8 +75,8 @@ namespace Enterprise.App.Controllers
             if (!ModelState.IsValid) return NotFound();
 
             var supplier = _mapper.Map<Supplier>(viewModel);
-            await _supplierRepository.Update(supplier);
-
+            await _supplierService.Update(supplier);
+            if (OperationIsValid()) return View(viewModel);
             return RedirectToAction(nameof(Index));
         }
 
@@ -92,10 +95,12 @@ namespace Enterprise.App.Controllers
         {
             var supplier = await FindSupplierAndAddressAndProduct(id);
             if (supplier is null) return BadRequest();
-            await _supplierRepository.Delete(id);
+            await _supplierService.Delete(id);
+            if (OperationIsValid()) return View(supplier);
             return RedirectToAction(nameof(Index));
         }
-                
+
+        [Route("FindAddress")]
         public async Task<IActionResult> FindAddress(Guid id)
         {
             var supplier = await FindSupplierAndAddress(id);
@@ -104,7 +109,8 @@ namespace Enterprise.App.Controllers
 
             return PartialView("_DetailsAddress", supplier);
         }
-
+        [HttpGet]
+        [Route("UpdateAddress/{id:guid}")]
         public async Task<IActionResult> UpdateAddress(Guid id)
         {
             var supplier = await FindSupplierAndAddress(id);
@@ -112,17 +118,19 @@ namespace Enterprise.App.Controllers
             if (supplier is null) return BadRequest();
 
             return PartialView("_UpdateAddress", new SupplierViewModel { Endereco = supplier.Endereco });
-        }        
+        }
 
         [HttpPost]
+        [Route("UpdateAddress/{id:guid}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateAddress(SupplierViewModel supplier)
+        public async Task<IActionResult> UpdateAddress(Guid id, SupplierViewModel supplier)
         {
             ModelState.Remove("Documento");
             ModelState.Remove("Nome");
             if (!ModelState.IsValid) return PartialView("_UpdateAddress", supplier);
 
-            await _addressRepository.Update(_mapper.Map<Address>(supplier.Endereco));
+            await _supplierService.UpdateAddress(_mapper.Map<Address>(supplier.Endereco));
+            if (OperationIsValid()) return View(supplier);
 
             var url = Url.Action("FindAddress", "Supplier", new { id = supplier.Id });
 
