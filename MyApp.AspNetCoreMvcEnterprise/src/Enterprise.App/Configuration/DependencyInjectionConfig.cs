@@ -15,6 +15,7 @@ namespace Enterprise.App.Configuration
             service.AddScoped<IProductRepository, ProductRepository>();
             service.AddScoped<IAddressRepository, AddressRepository>();
 
+            //Coin Validation
             service.AddSingleton<IValidationAttributeAdapterProvider, CoinValidationAttributeAdapterProvider>();
                         
             return service;
