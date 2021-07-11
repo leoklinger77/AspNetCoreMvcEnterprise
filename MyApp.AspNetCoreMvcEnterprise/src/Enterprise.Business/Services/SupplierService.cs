@@ -57,15 +57,26 @@ namespace Enterprise.Business.Services
         }
         public async Task<bool> Delete(Guid id)
         {
-            if (_supplierRepository.FindSupplierAndAddressAndProduct(id).Result.Products.Any())
+            try
             {
-                Notifier("O fornecedor possui produtos cadastrados.");
-                return false;
+                var rs = await _supplierRepository.FindSupplierAndAddressAndProduct(id);
+                if (rs.Products.Any())
+                {
+                    Notifier("O fornecedor possui produtos cadastrados.");
+                    return false;
+                }
+
+                if (rs.Endereco != null) await _addressRepository.Delete(rs.Endereco.Id);
+
+                await _supplierRepository.Delete(id);
+
+                return true;
             }
-
-            await _supplierRepository.Delete(id);
-
-            return true;
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            
         }
 
         public void Dispose()

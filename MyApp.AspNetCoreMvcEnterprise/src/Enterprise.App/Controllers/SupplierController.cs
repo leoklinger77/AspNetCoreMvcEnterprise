@@ -48,8 +48,7 @@ namespace Enterprise.App.Controllers
         }
 
         [HttpPost]        
-        [ClaimsAuthorize("Supplier", "Insert")]
-        [ValidateAntiForgeryToken]
+        [ClaimsAuthorize("Supplier", "Insert")]        
         public async Task<IActionResult> Create(SupplierViewModel viewModel)
         {
             if (!ModelState.IsValid) return View(viewModel);
@@ -69,8 +68,7 @@ namespace Enterprise.App.Controllers
         }
 
         [HttpPost]        
-        [ClaimsAuthorize("Supplier", "Edit")]
-        [ValidateAntiForgeryToken]
+        [ClaimsAuthorize("Supplier", "Edit")]        
         public async Task<IActionResult> Edit(Guid id, SupplierViewModel viewModel)
         {
             if (id != viewModel.Id) return NotFound();
@@ -91,8 +89,7 @@ namespace Enterprise.App.Controllers
         }
 
         [HttpPost, ActionName("Delete")]        
-        [ClaimsAuthorize("Supplier", "Remove")]
-        [ValidateAntiForgeryToken]
+        [ClaimsAuthorize("Supplier", "Remove")]        
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var supplier = await FindSupplierAndAddressAndProduct(id);
@@ -123,8 +120,7 @@ namespace Enterprise.App.Controllers
         }
 
         [HttpPost]        
-        [ClaimsAuthorize("Supplier", "Update")]
-        [ValidateAntiForgeryToken]
+        [ClaimsAuthorize("Supplier", "Update")]        
         public async Task<IActionResult> UpdateAddress(SupplierViewModel supplier)
         {
             ModelState.Remove("Documento");

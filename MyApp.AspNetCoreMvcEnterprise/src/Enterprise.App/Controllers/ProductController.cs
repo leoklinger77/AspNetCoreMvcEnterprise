@@ -58,8 +58,7 @@ namespace Enterprise.App.Controllers
 
         [HttpPost]
         [Route("novo-produto")]
-        [ClaimsAuthorize("Product", "Insert")]
-        [ValidateAntiForgeryToken]
+        [ClaimsAuthorize("Product", "Insert")]        
         public async Task<IActionResult> Create(ProductViewModel viewModel)
         {
             viewModel = await PopularSupplier(viewModel);
@@ -89,8 +88,7 @@ namespace Enterprise.App.Controllers
 
         [HttpPost]
         [Route("editar-produto/{id:guid}")]
-        [ClaimsAuthorize("Product", "Edit")]
-        [ValidateAntiForgeryToken]
+        [ClaimsAuthorize("Product", "Edit")]        
         public async Task<IActionResult> Edit(Guid id, ProductViewModel viewModel)
         {
             if (id != viewModel.Id) return NotFound();
@@ -129,8 +127,7 @@ namespace Enterprise.App.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ClaimsAuthorize("Product", "Remove")]
-        [Route("excluir-produto/{id:guid}")]
-        [ValidateAntiForgeryToken]
+        [Route("excluir-produto/{id:guid}")]        
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var db = await FindProduct(id);

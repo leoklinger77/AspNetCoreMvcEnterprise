@@ -15,6 +15,7 @@ namespace Enterprise.Data.Repository
         {
             return await _dbSet
                 .Include(x => x.Endereco)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
@@ -23,6 +24,7 @@ namespace Enterprise.Data.Repository
             return await _dbSet
                 .Include(x => x.Endereco)
                 .Include(x => x.Products)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
     }

@@ -13,7 +13,7 @@ namespace Enterprise.Data.Repository
 
         public async Task<Address> FindAddressPerSupplier(Guid id)
         {
-            return await _dbSet.Include(x => x.Supplier).FirstOrDefaultAsync(x => x.Id == id);
+            return await _dbSet.Include(x => x.Supplier).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

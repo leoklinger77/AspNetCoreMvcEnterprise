@@ -28,12 +28,12 @@ namespace Enterprise.Data.Repository
 
         public virtual async Task<T> FindById(Guid id)
         {
-            return await _dbSet.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            return await _dbSet.AsNoTracking().AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public virtual async Task<ICollection<T>> FindAll()
         {
-            return await _dbSet.AsNoTracking().ToListAsync();
+            return await _dbSet.AsNoTracking().AsNoTracking().ToListAsync();
         }
 
         public virtual async Task Insert(T entity)
