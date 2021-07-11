@@ -5,6 +5,7 @@ using Enterprise.Business.Interfaces.Service;
 using Enterprise.Business.Notifications;
 using Enterprise.Business.Services;
 using Enterprise.Data.Repository;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -28,6 +29,9 @@ namespace Enterprise.App.Configuration
             //Services
             service.AddScoped<ISupplierService, SupplierService>();
             service.AddScoped<IProductService, ProductService>();
+
+            service.AddTransient<IEmailSender, SendEmail>();
+
 
             return service;
         }

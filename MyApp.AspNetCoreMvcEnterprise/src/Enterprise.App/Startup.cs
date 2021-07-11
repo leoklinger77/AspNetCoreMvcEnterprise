@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Net;
+using System.Net.Mail;
 
 namespace Enterprise.App
 {
@@ -37,6 +39,26 @@ namespace Enterprise.App
             services.Dependency();
             services.MvcConfiguration();
             services.AddIdentity();
+            services.AddAuthentication()
+                .AddGoogle(options =>
+            {
+                options.ClientId = Configuration.GetValue<string>("web:client_id");
+                options.ClientSecret = Configuration.GetValue<string>("web:client_secret");
+            });
+
+            services.AddScoped<SmtpClient>(option =>
+            {
+                SmtpClient smtp = new SmtpClient()
+                {
+                    Host = Configuration.GetValue<string>("Email:ServerSMTP"),
+                    Port = Configuration.GetValue<int>("Email:Port"),
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(Configuration.GetValue<string>("Email:UserName"), Configuration.GetValue<string>("Email:Password")),
+                    EnableSsl = true
+                };
+
+                return smtp;
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -48,8 +70,10 @@ namespace Enterprise.App
             }
             else
             {
-                app.UseExceptionHandler("/Error/500");
-                app.UseStatusCodePagesWithRedirects("/erro/{0}");
+                //app.UseExceptionHandler("/Error/500");
+                //app.UseStatusCodePagesWithRedirects("/erro/{0}");
+                app.UseDeveloperExceptionPage();
+                app.UseMigrationsEndPoint();
                 app.UseHsts();
             }
             app.AppMvc();

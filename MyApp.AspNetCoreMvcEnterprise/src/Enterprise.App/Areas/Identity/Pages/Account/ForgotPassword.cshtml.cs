@@ -31,6 +31,7 @@ namespace teste.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
+            [Display(Name ="E-mail")]
             [EmailAddress]
             public string Email { get; set; }
         }
@@ -58,8 +59,8 @@ namespace teste.Areas.Identity.Pages.Account
 
                 await _emailSender.SendEmailAsync(
                     Input.Email,
-                    "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    "Redefinir senha",
+                    $"Por favor, confirme sua conta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Clicando aqui.</a>.");
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }
